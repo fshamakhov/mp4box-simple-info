@@ -4,6 +4,8 @@ window.URL = window.URL || window.webkitURL;
 
 document.getElementById('fileUp').onchange = processFile;
 
+const errorBox = document.getElementById('error');
+
 const chunkSize  = 1024 * 1024;
 
 function parseFile(fileObj, cb) {
@@ -55,21 +57,27 @@ function parseFile(fileObj, cb) {
 function setFileInfo(file, info) {
   console.log(info);
   if (!info.hasMoov || info.mime.indexOf('video/mp4') < 0) {
-    console.error('Invalid video format');
+    const msg = 'Invalid video format';
+    errorBox.textContent = msg;
+    console.error(msg);
     return;
   }
   const videoTrack = info.videoTracks 
     ? info.videoTracks[0]
     : info.tracks.find(t => t.name.indexOf('Video') > -1);
   if (!videoTrack) {
-    console.error('No video tracks found');
+    const msg = 'No video tracks found';
+    errorBox.textContent = msg;
+    console.error(msg);
     return;
   }
   const audioTrack = info.audioTracks
     ? info.audioTracks[0]
     : info.tracks.find(t => t.name.indexOf('Audio') > -1);
   if (!audioTrack) {
-    console.error('No audio tracks found');
+    const msg = 'No audio tracks found';
+    errorBox.textContent = msg;
+    console.error(msg);
     return;
   }
   myVideos.push({
@@ -88,6 +96,7 @@ function setFileInfo(file, info) {
 }
 
 function processFile() {
+  errorBox.textContent = '';
   try {
     parseFile(this.files[0], setFileInfo);
   } catch (e) {
